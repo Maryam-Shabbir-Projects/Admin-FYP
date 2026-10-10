@@ -33,3 +33,17 @@ GET  /reject-edit/:id     (Rejects hostel edit request — Login required)
 # login 
 username = admin
  password = 1234
+
+ # git push
+
+git init
+
+git remote add origin https://github.com/Maryam-Shabbir-Projects/Admin-FYP.git
+
+git remote set-url origin https://github.com/Maryam-Shabbir-Projects/Admin-FYP.git
+
+git add .
+git commit -m "Initial commit"
+git branch -M main
+git push -u origin main
+
