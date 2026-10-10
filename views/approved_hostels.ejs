@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Approved Hostels - Admin Dashboard</title>
+
+  <style>
+    :root {
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+
+      /* Theme Colors */
+      --orange: #ea580c;
+      --orange-light: #ffedd5;
+      --green: #10b981;
+      --green-light: #d1fae5;
+      --blue: #3b82f6;
+      --blue-light: #dbeafe;
+      --pink: #ec4899;
+      --pink-light: #fce7f3;
+      
+      --header-bg: #1e2330;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      position: relative;
+      min-height: 100vh;
+      padding-bottom: 40px;
+    }
+
+    /* ================= MAP BACKGROUND ================= */
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background-image: url('/image/map.png');
+      background-size: cover;
+      background-position: center;
+      opacity: 0.5;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    /* ================= NAVBAR ================= */
+    .top-navbar {
+      background-color: var(--header-bg);
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 30px;
+      font-size: 15px;
+      font-weight: bold;
+      margin-bottom: 30px;
+    }
+
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .badge-dark {
+      background: rgba(255,255,255,0.1);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: normal;
+      color: #cbd5e1;
+    }
+
+    .header-btn {
+      background: rgba(255,255,255,0.15);
+      color: white;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      transition: 0.2s;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    
+    .header-btn:hover {
+      background: rgba(255,255,255,0.25);
+    }
+
+    /* ================= CONTAINER ================= */
+    .container {
+      width: 96%;
+      max-width: 1400px;
+      margin: auto;
+      padding: 0 20px;
+    }
+
+    .page-header {
+      margin-bottom: 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .page-header h1 {
+      font-size: 24px;
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .page-header p {
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    .total-badge {
+      background: var(--green);
+      color: white;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    /* ================= GRID & CARDS ================= */
+    .hostels-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    .hostel-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .hostel-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    }
+
+    .hostel-badges {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 15px;
+    }
+
+    .badge-status {
+      background: var(--green-light);
+      color: var(--green);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .badge-category {
+      background: #f1f5f9;
+      color: #475569;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .badge-category.girls { background: var(--pink-light); color: var(--pink); }
+    .badge-category.boys { background: var(--blue-light); color: var(--blue); }
+
+    .hostel-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: var(--text-main);
+    }
+
+    /* ================= INFO LIST ================= */
+    .info-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .info-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    .info-item span {
+      color: var(--text-main);
+      font-weight: 600;
+    }
+
+    .icon {
+      width: 16px;
+      height: 16px;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+    }
+
+    .icon-rent { stroke: var(--orange); }
+    .icon-whatsapp { stroke: var(--green); }
+
+    /* ================= BUTTONS ================= */
+    .btn {
+      text-align: center;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: 0.2s;
+      cursor: pointer;
+      border: 1px solid var(--border-color);
+      display: block;
+      margin-top: auto;
+    }
+
+    .btn-view {
+      background: var(--bg-color);
+      color: var(--text-main);
+    }
+
+    .btn-view:hover {
+      background: #e2e8f0;
+    }
+
+    .empty-state {
+      grid-column: 1 / -1;
+      background: var(--card-bg);
+      padding: 50px 20px;
+      text-align: center;
+      border-radius: 12px;
+      color: var(--text-muted);
+      border: 1px solid var(--border-color);
+      font-size: 15px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ================= NAVBAR ================= -->
+  <div class="top-navbar">
+    <div class="brand-section">
+      🏢  Admin Dashboard
+      <span class="badge-dark">Approved Hostels</span>
+    </div>
+    <a href="/dashboard" class="header-btn">← Back to Dashboard</a>
+  </div>
+
+  <div class="container">
+    
+    <div class="page-header">
+      <div>
+        <h1>🟢 Approved Hostels</h1>
+        <p>Active and fully audited residence nodes.</p>
+      </div>
+      <!-- Total Approved Badge (matching image) -->
+      <div class="total-badge">
+        Total Approved: <%= approvedHostels ? approvedHostels.length : 0 %>
+      </div>
+    </div>
+
+    <div class="hostels-grid">
+      
+      <!-- ================= CHECK APPROVED HOSTELS ================= -->
+      <% if (approvedHostels && approvedHostels.length > 0) { %>
+        
+        <!-- ================= LOOP ================= -->
+        <% approvedHostels.forEach(h => { %>
+          
+          <div class="hostel-card">
+            
+            <div class="hostel-badges">
+              <span class="badge-status">✓ Approved</span>
+              
+              <span class="badge-category 
+                <% if (h.category && h.category.toLowerCase().includes('girl')) { %> girls 
+                <% } else if (h.category && h.category.toLowerCase().includes('boy')) { %> boys 
+                <% } %>">
+                <%= h.category || "Not specified" %>
+              </span>
+            </div>
+
+            <div class="hostel-title">
+              <%= h.name || "Unnamed Hostel" %>
+            </div>
+
+            <!-- INFO LIST -->
+            <div class="info-list">
+              <div class="info-item">
+                <svg class="icon icon-rent" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg>
+                Rent: <span>Rs <%= h.rent || 0 %></span>
+              </div>
+              <div class="info-item">
+                <svg class="icon icon-whatsapp" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                WhatsApp: <span><%= h.whatsapp || "Not provided" %></span>
+              </div>
+            </div>
+
+            <a href="/hostel-detail/<%= h.id %>" class="btn btn-view">👁 View Details</a>
+
+          </div>
+
+        <% }) %>
+        
+      <% } else { %>
+        
+        <!-- ================= EMPTY STATE ================= -->
+        <div class="empty-state">
+          No approved hostels found in the directory.
+        </div>
+        
+      <% } %>
+
+    </div>
+
+  </div>
+
+</body>
+</html>
